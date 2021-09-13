@@ -1,0 +1,8 @@
+/* a minimalist set of CSS resets */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
