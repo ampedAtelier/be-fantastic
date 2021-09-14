@@ -7,19 +7,38 @@ let pnOptions = {
   detectionType: 'single',
 };
 
+// Sketch Settings
+let shouldShowSkeleton = true;
+let shouldUseLiveVideo = false;
+
+/* https://p5js.org/learn/program-flow.html
+function preload() {
+  //
+} */
+
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(960, 540);
 
-  video = createCapture(VIDEO);
+  if (shouldUseLiveVideo == true) {
+    video = createCapture(VIDEO);
+  } else {
+    video = createVideo('assets/eMotion1sm.mp4', onVideoLoaded);
+    //video.size(width, height);
+  }
   video.hide();
-
   // Create a new poseNet object
   //console.log(ml5);
   // https://learn.ml5js.org/#/reference/posenet
   //poseNet = ml5.poseNet(video, onModelLoaded);
   poseNet = ml5.poseNet(video, pnOptions, onModelLoaded);
-  //poseNet.flipHorizontal = true;
   poseNet.on("pose", onPoses);
+}
+
+// invoked when the video loads
+function onVideoLoaded() {
+  console.log("Video Loaded!");
+  video.loop();
+  video.volume(0);
 }
 
 // invoked when the model is loaded
@@ -52,13 +71,15 @@ function draw() {
   filter(GRAY);
   
   if (pose) {
-    drawKeypoints();
-    drawSkeleton();
+    if (shouldShowSkeleton == true) {
+      drawKeypoints();
+      drawSkeleton();
+    }
   }
 }
 
+// draws body keypoints, the greener the keypoints, the higer the confidence
 function drawKeypoints() {
-  // draw body keypoints
   for (let i = 5; i < pose.keypoints.length; i++) {
     let x = pose.keypoints[i].position.x;
     let y = pose.keypoints[i].position.y;
@@ -69,8 +90,8 @@ function drawKeypoints() {
   }
 }
 
+// draws the skeleton
 function drawSkeleton() {
-  // draw the skeleton
   for (let i = 0; i < skeleton.length; i++) {
     let a = skeleton[i][0];
     let b = skeleton[i][1];
