@@ -22,8 +22,7 @@ function setup() {
   } else {
     video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
   	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotion1sm.mp4?v=1631659527193', onVideoLoaded);
-  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631827841006', onVideoLoaded);
-    
+  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
     //video.size(width, height);
   }
   video.hide();
@@ -127,7 +126,7 @@ function drawSkeleton() {
 // Cheyenne: adding text to keypoints on the body. 
 // Cheyenne: Thinking about keywords assocaited with waves because I was thinking Ayesha's movements look wave like. 
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
-  function drawBodyText(){
+function drawBodyText(){
   fill(30,200,255);
   // leftWrist
   // Cheyenne: randomised each textfont size to see if it made it more dynamic
