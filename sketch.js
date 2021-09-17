@@ -11,7 +11,17 @@ let pnOptions = {
   detectionType: 'single',
 };
 
+// Sketch Settings
+let shouldShowSkeleton = true;
+let shouldUseLiveVideo = false;
+
+/* https://p5js.org/learn/program-flow.html
+function preload() {
+  //
+} */
+
 function setup() {
+
   console.log("setting up...");
   createCanvas(960, 540);
   noCursor();
@@ -19,9 +29,9 @@ function setup() {
   if (shouldUseLiveVideo == true) {
     video = createCapture(VIDEO);
   } else {
-    //video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
+    video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
   	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotion1sm.mp4?v=1631659527193', onVideoLoaded);
-  	video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
+  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
     //video.size(width, height);
   }
   video.hide();
