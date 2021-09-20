@@ -2,36 +2,51 @@ let video;
 let poseNet;
 let pose;
 let skeleton;
+let bg;
+let y = 0;
+let sound;
+let amp;
+let fft;
+let circleX;
+let circleY;
+let circleSize;
+var rainDrops = [];
 
 // Sketch Settings
-let shouldShowSkeleton = true;  // can be toggled by pressing 'd' on the keyboard
+let shouldShowSkeleton = false;  // can be toggled by pressing 'd' on the keyboard
 let shouldUseLiveVideo = false;
 let pnOptions = {
   flipHorizontal: shouldUseLiveVideo,
   detectionType: 'single',
 };
 
-// Sketch Settings
-let shouldShowSkeleton = true;
-let shouldUseLiveVideo = false;
-
-/* https://p5js.org/learn/program-flow.html
-function preload() {
-  //
-} */
+function preload(){
+  //new Audio("https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343").play();
+  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
+}
 
 function setup() {
-
   console.log("setting up...");
   createCanvas(960, 540);
+  mySound.play();
   noCursor();
+  noFill();
+  strokeWeight(5);
+  circleX = width / 4;
+  circleY = height / 4;
+  circleSize = 0;
+  
+  amp = new p5.Amplitude();
+  fft = new p5.FFT();
 
   if (shouldUseLiveVideo == true) {
     video = createCapture(VIDEO);
   } else {
-    video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
+    //video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
   	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotion1sm.mp4?v=1631659527193', onVideoLoaded);
   	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
+    video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyehsa%20bw.mp4?v=1632043045579', onVideoLoaded);
+    //video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyesha%20Cosmic%20edit.mp4?v=1632043075474', onVideoLoaded);
     //video.size(width, height);
   }
   video.hide();
@@ -40,6 +55,10 @@ function setup() {
   // https://learn.ml5js.org/#/reference/posenet
   poseNet = ml5.poseNet(video, pnOptions, onModelLoaded);
   poseNet.on("pose", onPoses);
+
+  for (var i = 0; i < 50; i++) {
+    rainDrops[i] = new Drop();
+  }
 }
 
 // invoked when the video loads
@@ -77,12 +96,37 @@ function draw() {
     pop();
   } else {
     image(video,0,0);
+    
+  let level = amp.getLevel(); 
+  let waveform = fft.waveform();
+  let spectrum = fft.analyze;
+  
+  for(let i = 0; i < waveform.length; i++){
+    randomR = random(0,27)
+    randomG = random(20,100)
+    randomB = random(150,255)
+    noStroke()
+    fill(randomR, randomG, randomB,95)
+    //fill (246, 29, 90)
+    
+    let x = map(i, 0, waveform.length, 0, width)
+    let y = map(waveform[i], -1, 1, height, height/2 );
+    circle(x, y, 5)
+  }
+    
+     noFill();
+    circleSize += 15;
+
+  stroke(50, 64, 150);
+  circle(circleX, circleY, circleSize);
+  circle(circleX, circleY, circleSize * .75);
+  circle(circleX, circleY, circleSize * .5);
   }
   
   // https://p5js.org/reference/#/p5/filter
-  filter(GRAY);
+  //filter(GRAY);
   //Cheyenne:added the blur to see what it looks like. I think it makes Ayesha look more fluid which is pretty cool.
-  filter(BLUR,2);
+  //filter(BLUR,2);
   
   if (pose) {
     if (shouldShowSkeleton == true) {
@@ -90,6 +134,11 @@ function draw() {
       drawSkeleton();
     }
     drawBodyText();
+  }
+  // let it rain
+  for (var i = 0; i < rainDrops.length; i++) {
+    rainDrops[i].fall();
+    rainDrops[i].show();
   }
 }
 
@@ -128,12 +177,14 @@ function drawSkeleton() {
 // Cheyenne: Thinking about keywords assocaited with waves because I was thinking Ayesha's movements look wave like. 
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 function drawBodyText(){
-  fill(30,200,255);
-  // leftWrist
-  // Cheyenne: randomised each textfont size to see if it made it more dynamic
-  textSize(random(15,35));
-  text("the swelling of waves", pose.keypoints[9].position.x, pose.keypoints[9].position.y);
-  // rightKnee
-  textSize(random(15,35));
-  text("the crashing of storms", pose.keypoints[14].position.x, pose.keypoints[14].position.y);
+  noStroke()
+  fill(255);
+  textSize(25);
+  text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
+}
+
+function mousePressed(){
+  circleX = mouseX;
+  circleY = mouseY;
+  circleSize = 10;
 }
