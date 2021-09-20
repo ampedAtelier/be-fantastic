@@ -2,6 +2,7 @@ let video;
 let poseNet;
 let pose;
 let skeleton;
+
 let bg;
 let y = 0;
 let sound;
@@ -10,6 +11,7 @@ let fft;
 let circleX;
 let circleY;
 let circleSize;
+
 var rainDrops = [];
 
 // Sketch Settings
@@ -21,7 +23,6 @@ let pnOptions = {
 };
 
 function preload(){
-  //new Audio("https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343").play();
   mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
 }
 
@@ -122,7 +123,6 @@ function draw() {
   circle(circleX, circleY, circleSize * .75);
   circle(circleX, circleY, circleSize * .5);
   }
-  
   // https://p5js.org/reference/#/p5/filter
   //filter(GRAY);
   //Cheyenne:added the blur to see what it looks like. I think it makes Ayesha look more fluid which is pretty cool.
