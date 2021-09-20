@@ -11,7 +11,7 @@ let circleX;
 let circleY;
 let circleSize;
 
-var rainDrops = [];
+let rainDrops = [];
 
 // Sketch Settings
 let shouldShowSkeleton = false;  // can be toggled by pressing 'd' on the keyboard
@@ -58,7 +58,7 @@ function setup() {
   poseNet = ml5.poseNet(video, pnOptions, onModelLoaded);
   poseNet.on("pose", onPoses);
 
-  for (var i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i++) {
     rainDrops[i] = new Drop();
   }
 }
@@ -99,6 +99,8 @@ function draw() {
   } else {
     image(video,0,0);
   }
+
+  // draw the waveform
   let level = amp.getLevel(); 
   let waveform = fft.waveform();
   let spectrum = fft.analyze;
@@ -115,6 +117,8 @@ function draw() {
     let y = map(waveform[i], -1, 1, height, height/2 );
     circle(x, y, 5)
   }
+  // draw ripple
+  //TODO: rename circleX, circleY, circleSize to ripple....
   noFill();
   circleSize += 15;
   stroke(50, 64, 150);
@@ -135,7 +139,7 @@ function draw() {
     drawBodyText();
   }
   // let it rain
-  for (var i = 0; i < rainDrops.length; i++) {
+  for (let i = 0; i < rainDrops.length; i++) {
     rainDrops[i].fall();
     rainDrops[i].show();
   }
