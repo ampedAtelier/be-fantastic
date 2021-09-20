@@ -17,7 +17,6 @@ function Drop() {
         this.yspeed = map(this.z, 0, 20, 4, 10);
       }
     };
-  
     this.show = function() {
       let thick = map(this.z, 0, 20, 1, 3);
       push(); // Start a new drawing state
