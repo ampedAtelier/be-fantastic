@@ -9,8 +9,8 @@ We've moved `Fluid eMotion` from the [p5 editor](https://editor.p5js.org) to gli
 * `sketch.js` — this is our main p5 sketch
 
 ## Tasks
+- [ ] Make the rain look more apparent: drops vs lines
 - [ ] add interactive rain
-- [ ] add sound playback and audio analyzer
 
 ## References
 [Glitch](https://glitch.com) is a friendly community where millions of people come together to build web apps and websites.

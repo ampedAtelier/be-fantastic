@@ -3,9 +3,8 @@ let poseNet;
 let pose;
 let skeleton;
 
-let bg;
 let y = 0;
-let sound;
+let mySound;
 let amp;
 let fft;
 let circleX;
@@ -21,9 +20,14 @@ let pnOptions = {
   flipHorizontal: shouldUseLiveVideo,
   detectionType: 'single',
 };
+// Only one videoPath should be uncommented.
+let videoPath = 'assets/video/eMotionSm.mp4';
+//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyehsa%20bw.mp4?v=1632043045579';
+//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyesha%20Cosmic%20edit.mp4?v=1632043075474';
 
 function preload(){
-  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
+  mySound = loadSound('assets/audio/rainsound.mp3');
+  //mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
 }
 
 function setup() {
@@ -43,11 +47,8 @@ function setup() {
   if (shouldUseLiveVideo == true) {
     video = createCapture(VIDEO);
   } else {
-    //video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
-  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotion1sm.mp4?v=1631659527193', onVideoLoaded);
-  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
-    video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyehsa%20bw.mp4?v=1632043045579', onVideoLoaded);
-    //video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyesha%20Cosmic%20edit.mp4?v=1632043075474', onVideoLoaded);
+    // videoPath is declared above
+    video = createVideo(videoPath, onVideoLoaded);
     //video.size(width, height);
   }
   video.hide();
@@ -97,7 +98,7 @@ function draw() {
     pop();
   } else {
     image(video,0,0);
-    
+  }
   let level = amp.getLevel(); 
   let waveform = fft.waveform();
   let spectrum = fft.analyze;
@@ -114,15 +115,13 @@ function draw() {
     let y = map(waveform[i], -1, 1, height, height/2 );
     circle(x, y, 5)
   }
-    
-     noFill();
-    circleSize += 15;
-
+  noFill();
+  circleSize += 15;
   stroke(50, 64, 150);
   circle(circleX, circleY, circleSize);
   circle(circleX, circleY, circleSize * .75);
   circle(circleX, circleY, circleSize * .5);
-  }
+
   // https://p5js.org/reference/#/p5/filter
   //filter(GRAY);
   //Cheyenne:added the blur to see what it looks like. I think it makes Ayesha look more fluid which is pretty cool.
@@ -180,6 +179,7 @@ function drawBodyText(){
   noStroke()
   fill(255);
   textSize(25);
+  // pose keypoint 10 is the rightWrist
   text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
 }
 
