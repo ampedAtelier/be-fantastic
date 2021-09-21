@@ -101,22 +101,27 @@ function draw() {
   }
 
   // draw the waveform
-  let level = amp.getLevel(); 
+  //let level = amp.getLevel(); unused
   let waveform = fft.waveform();
-  let spectrum = fft.analyze;
-  
+  //let spectrum = fft.analyze; unused
+
+  noFill();
+  beginShape();
+  stroke(50, 64, 150);
+  strokeWeight(1);
   for(let i = 0; i < waveform.length; i++){
-    randomR = random(0,27)
-    randomG = random(20,100)
-    randomB = random(150,255)
-    noStroke()
-    fill(randomR, randomG, randomB,95)
+    // randomR = random(0,27)
+    // randomG = random(20,100)
+    // randomB = random(150,255)
+    // fill(randomR, randomG, randomB,95)
     //fill (246, 29, 90)
     
     let x = map(i, 0, waveform.length, 0, width)
-    let y = map(waveform[i], -1, 1, height, height/2 );
-    circle(x, y, 5)
+    let y = map(waveform[i], -1, 1, height, height/1.25);
+    //circle(x, y, 5);
+    vertex(x,y);
   }
+  endShape();
   // draw ripple
   //TODO: rename circleX, circleY, circleSize to ripple....
   noFill();
