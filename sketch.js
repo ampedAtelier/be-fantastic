@@ -3,9 +3,8 @@ let poseNet;
 let pose;
 let skeleton;
 
-let y = 0;
 let mySound;
-let amp;
+//let amp;  //TODO: remove unused amp refs
 let fft;
 let circleX;
 let circleY;
@@ -13,35 +12,43 @@ let circleSize;
 
 let rainDrops = [];
 
+// poem
+let refrainX = 0;
+let refrainY = 0;
+var speed = 8; // follow speed of refrain, higher number is slower
+
 // Sketch Settings
 let shouldShowSkeleton = false;  // can be toggled by pressing 'd' on the keyboard
 let shouldUseLiveVideo = false;
 let pnOptions = {
   flipHorizontal: shouldUseLiveVideo,
+  //scoreThreshold: 0.6, // defaults 0.5
   detectionType: 'single',
 };
 // Only one videoPath should be uncommented.
-let videoPath = 'assets/video/eMotionSm.mp4';
-//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyehsa%20bw.mp4?v=1632043045579';
-//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyesha%20Cosmic%20edit.mp4?v=1632043075474';
+//let videoPath = 'assets/video/newVid1hHD.mp4';
+let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
 
 function preload(){
-  mySound = loadSound('assets/audio/rainsound.mp3');
-  //mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
+  //mySound = loadSound('assets/audio/rainsound.mp3');
+  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
 }
 
 function setup() {
   console.log("setting up...");
+  // set canvas size and framerate to match video
   createCanvas(960, 540);
-  mySound.play();
+  frameRate(30);
   noCursor();
+
+  mySound.play();
   noFill();
   strokeWeight(5);
   circleX = width / 4;
   circleY = height / 4;
   circleSize = 0;
   
-  amp = new p5.Amplitude();
+  //amp = new p5.Amplitude();
   fft = new p5.FFT();
 
   if (shouldUseLiveVideo == true) {
@@ -49,7 +56,6 @@ function setup() {
   } else {
     // videoPath is declared above
     video = createVideo(videoPath, onVideoLoaded);
-    //video.size(width, height);
   }
   video.hide();
   // Create a new poseNet object
@@ -66,8 +72,9 @@ function setup() {
 // invoked when the video loads
 function onVideoLoaded() {
   console.log("Video Loaded!");
-  video.loop();
+  video.play();
   video.volume(0);
+  //video.volume(0.2);
 }
 
 // invoked when the model is loaded
@@ -79,8 +86,6 @@ function onModelLoaded() {
 function onPoses(poses) {
   //console.log('got poses!');
   if (poses.length > 0) {
-    //TODO: check confidence level of pose
-    //console.log(poses);
     pose = poses[0].pose;
     skeleton = poses[0].skeleton;
   }
@@ -108,7 +113,7 @@ function draw() {
   noFill();
   beginShape();
   stroke(50, 64, 150);
-  strokeWeight(1);
+  strokeWeight(2);
   for(let i = 0; i < waveform.length; i++){
     // randomR = random(0,27)
     // randomG = random(20,100)
@@ -152,7 +157,7 @@ function draw() {
 
 function keyPressed() {
   if (key == 'd'){
-    // toggle showing the skeleton
+    console.log('toggling showing the skeleton!');
     shouldShowSkeleton = !shouldShowSkeleton;
   }
 }
@@ -185,11 +190,22 @@ function drawSkeleton() {
 // Cheyenne: Thinking about keywords assocaited with waves because I was thinking Ayesha's movements look wave like. 
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 function drawBodyText(){
+  //TODO: should this be wrapped in push & pop?
   noStroke()
   fill(255);
   textSize(25);
+
+  let bodyPoint = pose.rightWrist;
+
+  if (bodyPoint.confidence > 0.5) {
+    let vec = createVector((bodyPoint.x - refrainX),(bodyPoint.y - refrainY));
+    refrainX +=  (vec.x * 1/speed);
+    refrainY +=  (vec.y * 1/speed);
+  } // else don't move the text
+
   // pose keypoint 10 is the rightWrist
-  text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
+  //text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
+  text("with every drop", refrainX, refrainY);
 }
 
 function mousePressed(){
