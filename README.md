@@ -5,6 +5,7 @@ We've moved `Fluid eMotion` from the [p5 editor](https://editor.p5js.org) to gli
 * `assets` — You can upload assets like video or audio in `assets` to the left. You need [it's URL to use in the project](https://help.glitch.com/kb/article/43-how-do-i-add-assets-like-audio-images-or-videos-to-my-projects/). The maximum file size per upload is limited to 256MB.
 * `README.md` — That's this file, we can use to document the project.
 * `index.html` — This is the main HTML page for your site.
+* `poem.txt` — The poem...
 * `style.css` — a minimalist set of CSS styling rules
 * `sketch.js` — this is our main p5 sketch
 
