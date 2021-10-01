@@ -12,6 +12,7 @@ let circleSize;
 let rainDrops = [];
 
 // poem
+let poem;
 let refrainX = 960;
 let refrainY = 540;
 var speed = 8; // follow speed of refrain, higher number is slower
@@ -30,6 +31,7 @@ let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Fn
 //let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid2hHD.mp4?v=1632426045413';
 
 function preload(){
+  poem = loadStrings('poem.txt');
   //mySound = loadSound('assets/audio/rainsound.mp3');
   mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
 }
@@ -40,6 +42,10 @@ function setup() {
   createCanvas(960, 540);
   frameRate(30);
   noCursor();
+
+  // set up font
+  textFont('Georgia');
+  textSize(25);
 
   mySound.play();
   noFill();
@@ -188,7 +194,6 @@ function drawBodyText(){
   //TODO: should this be wrapped in push & pop?
   noStroke()
   fill(255);
-  textFont("Georgia")
   textSize(18);
 
   let bodyPoint = pose.rightWrist;
@@ -198,10 +203,8 @@ function drawBodyText(){
     refrainX +=  (vec.x * 1/speed);
     refrainY +=  (vec.y * 1/speed);
   } // else don't move the text
-
-  // pose keypoint 10 is the rightWrist
-  //text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
   text("with \n     each  \n         drop", refrainX, refrainY);
+  text(random(poem), 10, 10, 80, 80);
 }
 
 function mousePressed(){
