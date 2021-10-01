@@ -3,52 +3,58 @@ let poseNet;
 let pose;
 let skeleton;
 
-let bg;
-let y = 0;
-let sound;
-let amp;
+let mySound;
 let fft;
 let circleX;
 let circleY;
 let circleSize;
 
-var rainDrops = [];
+let rainDrops = [];
+
+// poem
+let refrainX = 960;
+let refrainY = 540;
+var speed = 8; // follow speed of refrain, higher number is slower
 
 // Sketch Settings
 let shouldShowSkeleton = false;  // can be toggled by pressing 'd' on the keyboard
 let shouldUseLiveVideo = false;
 let pnOptions = {
   flipHorizontal: shouldUseLiveVideo,
+  //scoreThreshold: 0.6, // defaults 0.5
   detectionType: 'single',
 };
+// Only one videoPath should be uncommented.
+//let videoPath = 'assets/video/newVid1hHD.mp4';
+let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
+//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid2hHD.mp4?v=1632426045413';
 
 function preload(){
-  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');  
+  //mySound = loadSound('assets/audio/rainsound.mp3');
+  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
 }
 
 function setup() {
   console.log("setting up...");
+  // set canvas size and framerate to match video
   createCanvas(960, 540);
-  mySound.play();
+  frameRate(30);
   noCursor();
+
+  mySound.play();
   noFill();
   strokeWeight(5);
   circleX = width / 4;
   circleY = height / 4;
   circleSize = 0;
   
-  amp = new p5.Amplitude();
   fft = new p5.FFT();
 
   if (shouldUseLiveVideo == true) {
     video = createCapture(VIDEO);
   } else {
-    //video = createVideo('assets/eMotionSm.mp4', onVideoLoaded);
-  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotion1sm.mp4?v=1631659527193', onVideoLoaded);
-  	//video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FeMotionSm.mp4?v=1631833283046', onVideoLoaded);
-    video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyehsa%20bw.mp4?v=1632043045579', onVideoLoaded);
-    //video = createVideo('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FAyesha%20Cosmic%20edit.mp4?v=1632043075474', onVideoLoaded);
-    //video.size(width, height);
+    // videoPath is declared above
+    video = createVideo(videoPath, onVideoLoaded);
   }
   video.hide();
   // Create a new poseNet object
@@ -57,7 +63,7 @@ function setup() {
   poseNet = ml5.poseNet(video, pnOptions, onModelLoaded);
   poseNet.on("pose", onPoses);
 
-  for (var i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i++) {
     rainDrops[i] = new Drop();
   }
 }
@@ -65,8 +71,9 @@ function setup() {
 // invoked when the video loads
 function onVideoLoaded() {
   console.log("Video Loaded!");
-  video.loop();
+  video.play();
   video.volume(0);
+  //video.volume(0.2);
 }
 
 // invoked when the model is loaded
@@ -78,8 +85,6 @@ function onModelLoaded() {
 function onPoses(poses) {
   //console.log('got poses!');
   if (poses.length > 0) {
-    //TODO: check confidence level of pose
-    //console.log(poses);
     pose = poses[0].pose;
     skeleton = poses[0].skeleton;
   }
@@ -97,35 +102,39 @@ function draw() {
     pop();
   } else {
     image(video,0,0);
-    
-  let level = amp.getLevel(); 
+  }
+
+  // draw the waveform
   let waveform = fft.waveform();
-  let spectrum = fft.analyze;
-  
+
+  noFill();
+  beginShape();
+  stroke(50, 64, 150);
+  strokeWeight(2);
   for(let i = 0; i < waveform.length; i++){
-    randomR = random(0,27)
-    randomG = random(20,100)
-    randomB = random(150,255)
-    noStroke()
-    fill(randomR, randomG, randomB,95)
+    // randomR = random(0,27)
+    // randomG = random(20,100)
+    // randomB = random(150,255)
+    // fill(randomR, randomG, randomB,95)
     //fill (246, 29, 90)
     
     let x = map(i, 0, waveform.length, 0, width)
-    let y = map(waveform[i], -1, 1, height, height/2 );
-    circle(x, y, 5)
+    let y = map(waveform[i], -1, 1, height, height/1.25);
+    //circle(x, y, 5);
+    vertex(x,y);
   }
-    
-     noFill();
-    circleSize += 15;
-
+  endShape();
+  // draw ripple
+  //TODO: rename circleX, circleY, circleSize to ripple....
+  noFill();
+  circleSize += 15;
   stroke(50, 64, 150);
   circle(circleX, circleY, circleSize);
   circle(circleX, circleY, circleSize * .75);
   circle(circleX, circleY, circleSize * .5);
-  }
+
   // https://p5js.org/reference/#/p5/filter
   //filter(GRAY);
-  //Cheyenne:added the blur to see what it looks like. I think it makes Ayesha look more fluid which is pretty cool.
   //filter(BLUR,2);
   
   if (pose) {
@@ -136,7 +145,7 @@ function draw() {
     drawBodyText();
   }
   // let it rain
-  for (var i = 0; i < rainDrops.length; i++) {
+  for (let i = 0; i < rainDrops.length; i++) {
     rainDrops[i].fall();
     rainDrops[i].show();
   }
@@ -144,7 +153,7 @@ function draw() {
 
 function keyPressed() {
   if (key == 'd'){
-    // toggle showing the skeleton
+    console.log('toggling showing the skeleton!');
     shouldShowSkeleton = !shouldShowSkeleton;
   }
 }
@@ -173,14 +182,26 @@ function drawSkeleton() {
   }
 }
 
-// Cheyenne: adding text to keypoints on the body. 
-// Cheyenne: Thinking about keywords assocaited with waves because I was thinking Ayesha's movements look wave like. 
+
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 function drawBodyText(){
+  //TODO: should this be wrapped in push & pop?
   noStroke()
   fill(255);
-  textSize(25);
-  text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
+  textFont("Georgia")
+  textSize(18);
+
+  let bodyPoint = pose.rightWrist;
+
+  if (bodyPoint.confidence > 0.5) {
+    let vec = createVector((bodyPoint.x - refrainX),(bodyPoint.y - refrainY));
+    refrainX +=  (vec.x * 1/speed);
+    refrainY +=  (vec.y * 1/speed);
+  } // else don't move the text
+
+  // pose keypoint 10 is the rightWrist
+  //text("with every drop", pose.keypoints[10].position.x, pose.keypoints[10].position.y);
+  text("with \n     each  \n         drop", refrainX, refrainY);
 }
 
 function mousePressed(){

@@ -9,7 +9,7 @@ function Drop() {
   
     this.fall = function() {
       this.y = this.y + this.yspeed;
-      var grav = map(this.z, 0, 20, 0, 0.2);
+      let grav = map(this.z, 0, 20, 0, 0.2);
       this.yspeed = this.yspeed + grav;
   
       if (this.y > height) {
@@ -17,9 +17,8 @@ function Drop() {
         this.yspeed = map(this.z, 0, 20, 4, 10);
       }
     };
-  
     this.show = function() {
-      var thick = map(this.z, 0, 20, 1, 3);
+      let thick = map(this.z, 0, 20, 1, 3);
       push(); // Start a new drawing state
       strokeWeight(thick);
       stroke('white');
