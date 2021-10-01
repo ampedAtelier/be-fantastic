@@ -4,7 +4,6 @@ let pose;
 let skeleton;
 
 let mySound;
-//let amp;  //TODO: remove unused amp refs
 let fft;
 let circleX;
 let circleY;
@@ -14,8 +13,8 @@ let rainDrops = [];
 
 // poem
 let poem;
-let refrainX = 0;
-let refrainY = 0;
+let refrainX = 960;
+let refrainY = 540;
 var speed = 8; // follow speed of refrain, higher number is slower
 
 // Sketch Settings
@@ -29,6 +28,7 @@ let pnOptions = {
 // Only one videoPath should be uncommented.
 //let videoPath = 'assets/video/newVid1hHD.mp4';
 let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
+//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid2hHD.mp4?v=1632426045413';
 
 function preload(){
   poem = loadStrings('poem.txt');
@@ -54,7 +54,6 @@ function setup() {
   circleY = height / 4;
   circleSize = 0;
   
-  //amp = new p5.Amplitude();
   fft = new p5.FFT();
 
   if (shouldUseLiveVideo == true) {
@@ -112,9 +111,7 @@ function draw() {
   }
 
   // draw the waveform
-  //let level = amp.getLevel(); unused
   let waveform = fft.waveform();
-  //let spectrum = fft.analyze; unused
 
   noFill();
   beginShape();
@@ -144,7 +141,6 @@ function draw() {
 
   // https://p5js.org/reference/#/p5/filter
   //filter(GRAY);
-  //Cheyenne:added the blur to see what it looks like. I think it makes Ayesha look more fluid which is pretty cool.
   //filter(BLUR,2);
   
   if (pose) {
@@ -192,22 +188,22 @@ function drawSkeleton() {
   }
 }
 
-// Cheyenne: adding text to keypoints on the body. 
-// Cheyenne: Thinking about keywords assocaited with waves because I was thinking Ayesha's movements look wave like. 
+
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 function drawBodyText(){
   //TODO: should this be wrapped in push & pop?
   noStroke()
   fill(255);
+  textSize(18);
 
   let bodyPoint = pose.rightWrist;
+
   if (bodyPoint.confidence > 0.5) {
     let vec = createVector((bodyPoint.x - refrainX),(bodyPoint.y - refrainY));
     refrainX +=  (vec.x * 1/speed);
     refrainY +=  (vec.y * 1/speed);
   } // else don't move the text
-  text("with every drop", refrainX+30, refrainY);
-
+  text("with \n     each  \n         drop", refrainX, refrainY);
   text(random(poem), 10, 10, 80, 80);
 }
 
