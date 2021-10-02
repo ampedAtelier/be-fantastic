@@ -4,16 +4,19 @@ let pose;
 let skeleton;
 
 let mySound;
-let fft;
-let circleX;
-let circleY;
-let circleSize;
 
 // poem
 let poem;
 let refrainX = 960;
 let refrainY = 540;
-var speed = 8; // follow speed of refrain, higher number is slower
+var speed = 4; // follow speed of refrain, higher number is slower
+
+let shouldDrawRipple = false;
+let curStanzaIndex = 0;
+let rippleX = 0;
+let rippleY = 0;
+let curRotation = 0;
+let curRadius = 60;
 
 // Sketch Settings
 let shouldShowSkeleton = false;  // can be toggled by pressing 'd' on the keyboard
@@ -24,14 +27,14 @@ let pnOptions = {
   detectionType: 'single',
 };
 // Only one videoPath should be uncommented.
-let videoPath = 'assets/video/newVid1hHD.mp4';
-//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
+//let videoPath = 'assets/video/newVid1hHD.mp4';
+let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
 //let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid2hHD.mp4?v=1632426045413';
 
 function preload(){
   poem = loadStrings('poem.txt');
-  mySound = loadSound('assets/audio/rainsound.mp3');
-  //mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
+  //mySound = loadSound('assets/audio/rainsound.mp3');
+  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
 }
 
 function setup() {
@@ -41,16 +44,15 @@ function setup() {
   frameRate(30);
   noCursor();
 
+  noFill();
+  stroke(50, 64, 150);
+  strokeWeight(1);
   // set up font
   textFont('Georgia');
   textSize(25);
+  curRotation = HALF_PI;
 
   mySound.play();
-  noFill();
-  strokeWeight(5);
-  circleX = width / 4;
-  circleY = height / 4;
-  circleSize = 0;
   
   fft = new p5.FFT();
 
@@ -126,7 +128,6 @@ function draw() {
   endShape();
   */
   /* draw ripple
-  //TODO: rename circleX, circleY, circleSize to ripple....
   noFill();
   circleSize += 15;
   stroke(50, 64, 150);
@@ -143,8 +144,33 @@ function draw() {
       drawKeypoints();
       drawSkeleton();
     }
-    drawBodyText();
-  }
+    drawRefrain();
+    // draw a stanza
+    if (shouldDrawRipple == false) {
+      // determine if we should draw a stanza
+      if (pose.nose.confidence > 0.5) {
+        shouldDrawRipple = true;
+        rippleX = pose.nose.x;
+        rippleY = pose.nose.y;
+      }
+    }
+    if (shouldDrawRipple == true) {
+      drawTextOnCircle(poem[curStanzaIndex], rippleX, rippleY, curRadius);
+      curRotation = curRotation - QUARTER_PI/16;
+      if (curRadius < (width/2)) {
+        curRadius = curRadius+5;
+      } else {
+        // reset everything
+        curRadius = 60;
+        curRotation = HALF_PI;
+        shouldDrawRipple = false;
+        curStanzaIndex = curStanzaIndex+1;
+        if (curStanzaIndex == (poem.length-1)) {
+          curStanzaIndex = 0;
+        }
+      }
+    } // end shouldDrawRipple
+  } // end if pose
 }
 
 function keyPressed() {
@@ -157,13 +183,16 @@ function keyPressed() {
 // draws body keypoints, the greener the keypoints, the higer the confidence
 function drawKeypoints() {
   for (let i = 5; i < pose.keypoints.length; i++) {
-  	//TODO: only draw keypoint above a certain score
-    let x = pose.keypoints[i].position.x;
-    let y = pose.keypoints[i].position.y;
-    // https://p5js.org/reference/#/p5/lerp
-    let c = lerp(0, 255, pose.keypoints[i].score);
-    fill(0, c, 0);
-    ellipse(x, y, 6, 6);
+    let conf = pose.keypoints[i].score;
+  	// only draw keypoint above a certain confidence score
+    if (conf > 0.5) {
+      let x = pose.keypoints[i].position.x;
+      let y = pose.keypoints[i].position.y;
+      // https://p5js.org/reference/#/p5/lerp
+      let c = lerp(0, 255, conf);
+      fill(0, c, 0);
+      ellipse(x, y, 6, 6);
+    }
   }
 }
 
@@ -172,18 +201,16 @@ function drawSkeleton() {
   for (let i = 0; i < skeleton.length; i++) {
     let a = skeleton[i][0];
     let b = skeleton[i][1];
-    strokeWeight(1);
     stroke(255);
     line(a.position.x, a.position.y, b.position.x, b.position.y);
   }
 }
 
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
-function drawBodyText(){
+function drawRefrain(){
   //TODO HR: should this be wrapped in push & pop?
   noStroke()
   fill(255);
-  textSize(18);
 
   let bodyPoint = pose.rightWrist;
 
@@ -192,8 +219,49 @@ function drawBodyText(){
     refrainX +=  (vec.x * 1/speed);
     refrainY +=  (vec.y * 1/speed);
   } // else don't move the text
-  text("with \n     each  \n         drop", refrainX, refrainY);
+  text("with \n     each  \n         drop", refrainX+30, refrainY);
   //text(random(poem), 10, 10);
+}
+
+function drawTextOnCircle(aString, x, y, r) {
+  translate(x, y);
+  noFill();
+  stroke('blue');
+
+  // Our curve is a circle with radius r
+  let circleSize = 2*r-10;
+  circle(0, 0, circleSize);
+  circle(0, 0, circleSize * .8);
+  circle(0, 0, circleSize * .6);
+
+  // keep track of our position along the curve
+  let arclength = 0;
+
+  rotate(curRotation);
+  
+  // For every letter in the text
+  for (let i = 0; i < aString.length; i++) {
+      currentChar = aString.charAt(i);
+      w = textWidth(currentChar);
+      // Each letter is centered so we move half the width
+      arclength += w/2
+
+      // Angle in radians is the arclength divided by the radius
+      // Starting on the left side of the circle by adding PI
+      theta = PI + (arclength / r);
+
+      push();
+      // Polar to cartesian coordinate conversion
+      translate(r*cos(theta), r*sin(theta));
+      rotate(HALF_PI+theta);
+      fill('blue');
+      textAlign(CENTER);      // The text must be centered!
+      text(currentChar, 0,0);
+      pop();
+      
+      // Move halfway again for the next letter
+      arclength += w/2
+  }
 }
 
 function mousePressed(){
