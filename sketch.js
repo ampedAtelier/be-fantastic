@@ -9,8 +9,6 @@ let circleX;
 let circleY;
 let circleSize;
 
-let rainDrops = [];
-
 // poem
 let poem;
 let refrainX = 960;
@@ -26,14 +24,14 @@ let pnOptions = {
   detectionType: 'single',
 };
 // Only one videoPath should be uncommented.
-//let videoPath = 'assets/video/newVid1hHD.mp4';
-let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
+let videoPath = 'assets/video/newVid1hHD.mp4';
+//let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid1hHD.mp4?v=1632334490187';
 //let videoPath = 'https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2FnewVid2hHD.mp4?v=1632426045413';
 
 function preload(){
   poem = loadStrings('poem.txt');
-  //mySound = loadSound('assets/audio/rainsound.mp3');
-  mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
+  mySound = loadSound('assets/audio/rainsound.mp3');
+  //mySound = loadSound('https://cdn.glitch.com/143a7c8f-a046-4f06-a4a2-9c98e9a30e9e%2Frainsound.mp3?v=1631541521343');
 }
 
 function setup() {
@@ -68,10 +66,6 @@ function setup() {
   // https://learn.ml5js.org/#/reference/posenet
   poseNet = ml5.poseNet(video, pnOptions, onModelLoaded);
   poseNet.on("pose", onPoses);
-
-  for (let i = 0; i < 50; i++) {
-    rainDrops[i] = new Drop();
-  }
 }
 
 // invoked when the video loads
@@ -110,7 +104,7 @@ function draw() {
     image(video,0,0);
   }
 
-  // draw the waveform
+  /* draw the waveform
   let waveform = fft.waveform();
 
   noFill();
@@ -130,7 +124,8 @@ function draw() {
     vertex(x,y);
   }
   endShape();
-  // draw ripple
+  */
+  /* draw ripple
   //TODO: rename circleX, circleY, circleSize to ripple....
   noFill();
   circleSize += 15;
@@ -138,7 +133,7 @@ function draw() {
   circle(circleX, circleY, circleSize);
   circle(circleX, circleY, circleSize * .75);
   circle(circleX, circleY, circleSize * .5);
-
+  */
   // https://p5js.org/reference/#/p5/filter
   //filter(GRAY);
   //filter(BLUR,2);
@@ -149,11 +144,6 @@ function draw() {
       drawSkeleton();
     }
     drawBodyText();
-  }
-  // let it rain
-  for (let i = 0; i < rainDrops.length; i++) {
-    rainDrops[i].fall();
-    rainDrops[i].show();
   }
 }
 
@@ -188,10 +178,9 @@ function drawSkeleton() {
   }
 }
 
-
 // Keypoint indices can be found here: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 function drawBodyText(){
-  //TODO: should this be wrapped in push & pop?
+  //TODO HR: should this be wrapped in push & pop?
   noStroke()
   fill(255);
   textSize(18);
@@ -204,11 +193,9 @@ function drawBodyText(){
     refrainY +=  (vec.y * 1/speed);
   } // else don't move the text
   text("with \n     each  \n         drop", refrainX, refrainY);
-  text(random(poem), 10, 10, 80, 80);
+  //text(random(poem), 10, 10);
 }
 
 function mousePressed(){
-  circleX = mouseX;
-  circleY = mouseY;
-  circleSize = 10;
+  //TODO HR: if shouldUseLiveVideo == false then start the video & sound
 }
