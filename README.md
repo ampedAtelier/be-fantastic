@@ -1,4 +1,6 @@
 # Fluid Emotion
+Fluid eMotion started in the [p5 editor](https://editor.p5js.org), moved to [glitch](https://glitch.com) for collaborative coding, before being renamed *With Each Drop* and moved to [GitHub Pages](https://pages.github.com/). This repo has been archived, the current repo is [witheachdrop.github.io](https://github.com/witheachdrop/witheachdrop.github.io) and the current site is [https://witheachdrop.github.io](https://witheachdrop.github.io).
+
 We've moved `Fluid eMotion` from the [p5 editor](https://editor.p5js.org) to glitch. Glitch works a little differently than the p5 editor. There is no need to save. While you develop your piece, changes will happen 🪄 immediately in the preview window to the right. Importing & Exporting is how Glitch works with git!
 
 ## What's in this project?
